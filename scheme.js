@@ -19,11 +19,57 @@ Ball.prototype.ballWithPath = function() {
 	return result;
 };
 
+Ball.prototype.toString = function() {
+	var ball = this;
+	var simpleBall = {};
+	directions.forEach(function(dir) {
+		if (ball[dir]) {
+			simpleBall[dir] = ball[dir].self;
+		} else {
+			simpleBall[dir] = "?";
+		}
+	});
+
+	return ("    " + simpleBall.top + "    \n" 
+		+ "    |    \n" 
+		+ simpleBall.left + " - " + ball.self + " - " + simpleBall.right + "\n"
+		+ "    |    \n" 
+		+ "    " + simpleBall.bottom + "    \n");
+}
+
 function Scheme(n) {
 	for (var i = 0; i < n; i++) {
 		this[i] = new Ball(i);
 	}
 	this.count = n;
+}
+
+Scheme.prototype.simpleRepresentation = function() {
+	var result = {};
+	// console.log(this);
+	for (var i = 0; i < this.count; i++) {
+		var simpleBall = {};
+		var ball = this[i];
+		// console.log(this[i]);
+
+		directions.forEach(function (dir) {
+			if (ball[dir]) {
+				simpleBall[dir] = ball[dir].self;	
+			} else {
+				simpleBall[dir] = "?";
+			}
+		});
+		result[i] = simpleBall;
+	}
+	return result;
+};
+
+Scheme.prototype.toString = function() {
+	var result = "";
+	for (var i = 0; i < this.count; i++) {
+		result += this[i].toString() + "\n\n";
+	}
+	return result;
 }
 
 // Scheme.prototype.getBall = function(number) {
@@ -83,10 +129,19 @@ function autoFill(ball) {
 	return true;
 }
 
+function autoFillAll(scheme) {
+	for (var i = 0; i < scheme.count; i++) {
+		var result = autoFill(scheme[i]);
+		if (!result) return false;
+	}
+	return true;
+}
+
 var s = new Scheme(5);
 s[2].left = s[1];
 s[2].top = s[3];
 s[1].top = s[4];
+// s[3].left = s[4];
 // s[1].right = s[0];
-var result = autoFill(s[2]);
-console.log(result);
+var result = autoFillAll(s);
+console.log(s.toString());
