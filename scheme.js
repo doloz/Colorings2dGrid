@@ -83,13 +83,10 @@ function autoFill(ball) {
 	return true;
 }
 
-function autoCheck(scheme) {
-
-}
-
-
 var s = new Scheme(5);
 s[2].left = s[1];
+s[2].top = s[3];
+s[1].top = s[4];
 // s[1].right = s[0];
 var result = autoFill(s[2]);
 console.log(result);
