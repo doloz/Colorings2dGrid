@@ -11,13 +11,18 @@ function Scheme(n) {
 	this.count = n;
 }
 
+// ----- PROTOTYPE METHODS -----
+
+Scheme.prototype.connect = function(ball1, dir, ball2) {
+	ball1[dir] = ball2;
+	ball2[opposite[dir]] = ball1;
+}
+
 Scheme.prototype.simpleRepresentation = function() {
 	var result = {};
-	// console.log(this);
 	for (var i = 0; i < this.count; i++) {
 		var simpleBall = {};
 		var ball = this[i];
-		// console.log(this[i]);
 
 		directions.forEach(function (dir) {
 			if (ball[dir]) {
@@ -58,12 +63,41 @@ Scheme.prototype.copy = function() {
 	}
 	return copied;
 }
-// Scheme.prototype.getBall = function(number) {
-// 	if (number >= 0 && number < this.count) {
-// 		return this[number]
-// 	}
-// };
 
+
+Scheme.prototype.setupEnumeration = function(ball) {
+	var iterateBy = [];
+	directions.forEach(function(dir) {
+		if (!ball[dir]) iterateBy.push(dir);
+	});
+	ball.iterateBy = iterateBy;
+	var copy = this.copy();
+	// ball.iterateBy.forEach(function(dir) {
+	// 	copy[ball.self][dir] = copy[0];
+	// })
+}
+
+Scheme.prototype.schemeWithBallVariant = function(ball, variantNumber) {
+	var iterateBy = [];
+	directions.forEach(function(dir) {
+		if (!ball[dir]) iterateBy.push(dir);
+	});
+	var variantComponents = {};
+	for (var i = iterateBy.length - 1; i >= 0; i--) {
+		variantComponents[iterateBy[i]] = variantNumber % this.count;
+		variantNumber = variantNumber / this.count;
+	}
+	var copy = this.copy();
+	var iteratedBall = copy[ball.self];
+	variantComponents.forEach(function(dir) {
+		iteratedBall[dir] = copy[variantComponents[dir]];
+	});
+	return copy;
+}
+
+Scheme.prototype.numberOfVariants = function(ball) {
+	return Math.pow(this.count, ball.iterateBy.length);
+}
 
 
 function autoFill(ball) {
@@ -77,6 +111,7 @@ function autoFill(ball) {
 					return false;
 				}
 			} else {
+				console.log("Connect(type 1)", otherBall.self, opposite[dir], ball.self);
 				otherBall[opposite[dir]] = ball;
 			}
 		}
@@ -95,8 +130,8 @@ function autoFill(ball) {
 			if (ballXY !== ballYX) return false;
 				else continue;
 		} 
-		if (ballXY !== null) ballYX = ballXY;
-			else ballXY = ballYX;
+		if (ballXY !== null) ballY[pair[0]] = ballXY;
+			else ballX[pair[1]] = ballYX;
 	}
 
 	return true;
@@ -123,13 +158,10 @@ var s = new Scheme(5);
 s[2].left = s[1];
 s[2].top = s[3];
 s[1].top = s[4];
+console.log(autoFillAll(s));
 
-var s2 = s.copy();
-s2[1].top = s2[1];
-// s[3].left = s[4];
-// s[1].right = s[0];
-var result = autoFillAll(s);
+autoFillAll(s);
 console.log(s.toString());
-console.log(s2.toString());
+
 
 // console.log(s.connectionsCount());
