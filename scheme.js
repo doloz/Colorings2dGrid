@@ -82,14 +82,16 @@ Scheme.prototype.schemeWithBallVariant = function(ball, variantNumber) {
 	directions.forEach(function(dir) {
 		if (!ball[dir]) iterateBy.push(dir);
 	});
+	// console.log(iterateBy);
 	var variantComponents = {};
 	for (var i = iterateBy.length - 1; i >= 0; i--) {
 		variantComponents[iterateBy[i]] = variantNumber % this.count;
-		variantNumber = variantNumber / this.count;
+		variantNumber = Math.floor(variantNumber / this.count);
 	}
+	// console.log(variantComponents);
 	var copy = this.copy();
 	var iteratedBall = copy[ball.self];
-	variantComponents.forEach(function(dir) {
+	Object.keys(variantComponents).forEach(function(dir) {
 		iteratedBall[dir] = copy[variantComponents[dir]];
 	});
 	return copy;
@@ -154,14 +156,11 @@ function autoFillAll(scheme) {
 
 }
 
-var s = new Scheme(5);
-s[2].left = s[1];
-s[2].top = s[3];
-s[1].top = s[4];
-console.log(autoFillAll(s));
 
-autoFillAll(s);
-console.log(s.toString());
+var x = new Scheme(5);
+// console.log(x.schemeWithBallVariant(x[0], 55).toString());
 
-
+for (var i = 0; i < 100; i++) {
+	console.log(x.schemeWithBallVariant(x[0], i)[0].toString());
+}
 // console.log(s.connectionsCount());
