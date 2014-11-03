@@ -98,7 +98,7 @@ Scheme.prototype.schemeWithBallVariant = function(ball, variantNumber) {
 }
 
 Scheme.prototype.numberOfVariants = function(ball) {
-	return Math.pow(this.count, ball.iterateBy.length);
+	return Math.pow(this.count, 4 - ball.connectionsCount());
 }
 
 
@@ -113,7 +113,7 @@ function autoFill(ball) {
 					return false;
 				}
 			} else {
-				console.log("Connect(type 1)", otherBall.self, opposite[dir], ball.self);
+				// console.log("Connect(type 1)", otherBall.self, opposite[dir], ball.self);
 				otherBall[opposite[dir]] = ball;
 			}
 		}
@@ -156,11 +156,41 @@ function autoFillAll(scheme) {
 
 }
 
+var foundSchemes = [];
+var foundSchemesCount = 0;
 
-var x = new Scheme(5);
-// console.log(x.schemeWithBallVariant(x[0], 55).toString());
-
-for (var i = 0; i < 100; i++) {
-	console.log(x.schemeWithBallVariant(x[0], i)[0].toString());
+function enumerateAllSchemes(startingScheme, startingBall) {
+	for (var variantNumber = 0; variantNumber < startingScheme.numberOfVariants(startingBall); variantNumber++) {
+		var newScheme = startingScheme.schemeWithBallVariant(startingBall, variantNumber);
+		if (autoFillAll(newScheme)) {
+			if (newScheme.connectionsCount() == 4 * newScheme.count) {
+				console.log("New scheme found(" + foundSchemesCount++ + "): ");
+				console.log(newScheme.toString());
+				foundSchemes.push(newScheme);
+				console.log("-----------");
+				continue;
+			} else {
+				var maxConnections = 0;
+				var nextBallIndex = 0;
+				for (var i = 0; i < newScheme.count; i++) {
+					var connections = newScheme[i].connectionsCount();
+					if (connections < 4 && connections >= maxConnections) {
+						nextBallIndex = i;
+						maxConnections = connections;
+					}
+				}
+				var nextBall = newScheme[nextBallIndex];
+				enumerateAllSchemes(newScheme,nextBall);
+			}
+		} else {
+			continue;
+		}
+	}
 }
-// console.log(s.connectionsCount());
+
+
+var x = new Scheme(7);
+x[0].left = x[1];
+autoFillAll(x);
+enumerateAllSchemes(x, x[0])
+
