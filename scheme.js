@@ -1,4 +1,8 @@
 var Ball = require('./ball.js');
+var directions = require('./directions.js').directions;
+var opposite = require('./directions.js').opposite;
+var pairs = require('./directions.js').pairs;
+
 
 function Scheme(n) {
 	for (var i = 0; i < n; i++) {
@@ -60,20 +64,7 @@ Scheme.prototype.copy = function() {
 // 	}
 // };
 
-var directions = ["left", "right", "top", "bottom"];
-var opposite = {
-	"left": "right",
-	"right": "left",
-	"top": "bottom",
-	"bottom": "top"
-};
 
-var pairs = [
-	["left", "top"],
-	["left", "bottom"],
-	["right", "top"],
-	["right", "bottom"]
-];
 
 function autoFill(ball) {
 	// A + x + -x = A
